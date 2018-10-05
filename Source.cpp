@@ -110,7 +110,7 @@ int main()
 	glDeleteBuffers(2, VBO);
 	
 
-	glfwTerminate();
+	//glfwTerminate();
 	return 0;
 }
 
