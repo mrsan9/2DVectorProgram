@@ -1,14 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include "stb_image.h"
-#include <iostream>
-using namespace std;
-#include "shader.h"
-
-typedef glm::vec2 vec2;
-typedef glm::vec3 vec3;
+#include "shapes.h"
 
 
 
