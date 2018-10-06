@@ -9,16 +9,16 @@ int s;
 
 int m = 0;  //Modes switching
 bool draw = false;//draw toggle
-static int click;//No of clicks
+//No of clicks
 
 
 vec2 N[20];  //Stores Click Positions
-vec2 *points = NULL;
+
+
 int main()
 {		
 
-	vec2 t1; cout << "T1 size: " << sizeof(t1)<<endl;
-	cout << "T2 size: " << sizeof(points) << endl;
+
 	//points = NULL;
 	click = 0;
 	//m = 3;
@@ -61,13 +61,13 @@ int main()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-	 
+	Shape *l;
 	glUseProgram(ShaderProg);
 	while (!glfwWindowShouldClose(window))
 	{		
-		
+		l = new Poly();
 		glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
-		glLineWidth(3); glPointSize(30.0f);
+		glLineWidth(3); glPointSize(20.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//double t = glfwGetTime();
 		glUseProgram(ShaderProg);
@@ -80,25 +80,28 @@ int main()
 			else
 				ss = click;
 				//vec2 points[size];
-				glBindVertexArray(VAO[0]);
-			    points = new vec2[ss];
+				
+				//points = new vec2[ss]; 
 				//cout << "T3 size: " << sizeof(points) << endl;
-				genPoints(points, N);
+				//genPoints(points, N); 
+				
+				
 				//genPoints(points,vec2(0.2,0.2),vec2(0.4,0.4));
+			
 				
 		}
-	
-		glBufferData(GL_ARRAY_BUFFER, sizeof(points)*(ss) * 2, points, GL_STATIC_DRAW); draw = false;
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); glEnableVertexAttribArray(0);
-		glDrawArrays(GL_LINE_LOOP, 0, ss);
-
+		glBindVertexArray(VAO[0]);
+		l->drawShape(N);
+		
+		
+		
 		glBindVertexArray(VAO[1]);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(N), N, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 		int k = click+1 ;
-		if (m != 4)
-			glDrawArrays(GL_POINTS, 0, 2);
-		else
+		//if (m != 4)
+			//glDrawArrays(GL_POINTS, 0, 2);
+	//	else
 			glDrawArrays(GL_POINTS,0,click);
 
 		glfwSwapBuffers(window);
@@ -115,7 +118,7 @@ int main()
 }
 
 
-void genPoints(vec2 *a, vec2 C[])
+/*void genPoints(vec2 *a, vec2 C[])
 {	
 	float rad = sqrt(pow(C[1].x - C[0].x, 2) + pow(C[1].y - C[0].y, 2));
 	float angle = 0; int i = 0;
@@ -128,7 +131,7 @@ void genPoints(vec2 *a, vec2 C[])
 			cout << C[i].x << " , " << C[i].y << " ";
 		break;
 	case 2:
-				
+		
 		 //cout<<(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2));
 		i = 0;
 		while (i < s)
@@ -157,7 +160,7 @@ void genPoints(vec2 *a, vec2 C[])
 	}
 
 	
-}
+}*/
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -167,6 +170,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		double xpos = 0, ypos = 0;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		vec2 mp = vec2(xpos,ypos);
+
+		N[click] = screenToWorld(window, mp);
+		++click;
+		/*
 		if (m != 4) {
 			if (click < 2)
 				N[click] = screenToWorld(window, mp);
@@ -179,11 +186,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		}
 		else
 		{
-			N[click] = screenToWorld(window, mp);
-			++click;
+			
 			
 			draw = true;
-		}
+		}*/
 
 		
 	}
@@ -203,7 +209,8 @@ void key_button_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_C && action == GLFW_RELEASE)
 	{
-		points = NULL; draw = true; m = NULL;
+		//points = NULL; 
+		draw = true; m = NULL;
 	}
 
 	if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
