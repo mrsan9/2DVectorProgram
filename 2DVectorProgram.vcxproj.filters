@@ -40,5 +40,8 @@
     <ClInclude Include="InitProg.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="shapes.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
