@@ -3,26 +3,24 @@
 
 
 
-void  genPoints(vec2 *a, vec2 C[]);
+//void  genPoints(vec2 *a, vec2 C[]);
 
-int s; 
 
 int m = 0;  //Modes switching
-bool draw = false;//draw toggle
-//No of clicks
 
 
-vec2 N[20];  //Stores Click Positions
 
 
+vec2 N[200];  //Stores Click Positions
+
+list<Circle> l;
 int main()
 {		
 
-
-	//points = NULL;
+	
+	
 	click = 0;
-	//m = 3;
-	//draw = false;
+	
 	Init w;
 	GLFWwindow* window = w.window;
 	GLuint ShaderProg = w.ShaderProg;
@@ -31,12 +29,7 @@ int main()
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetKeyCallback(window,key_button_callback);
 	//glfwSetCursorPosCallback(window, cursor_pos_callback);
-	
-	int size = 20;
-	s = size;
-	
 
-	int ss = 0;
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glUseProgram(ShaderProg);
 	//glEnable(GL_DEPTH_TEST);
@@ -61,38 +54,35 @@ int main()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-	Shape *l;
+	list <Circle> ::iterator it; bool draw = true;
+	
 	glUseProgram(ShaderProg);
 	while (!glfwWindowShouldClose(window))
-	{		
-		l = new Poly();
+	{
+
 		glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 		glLineWidth(3); glPointSize(20.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//double t = glfwGetTime();
 		glUseProgram(ShaderProg);
-		if (draw)
-		{	
-			
-			if (m == 1)ss = 2;
-			else if (m == 2)ss = size;
-			else if (m == 3)ss = 4;
-			else
-				ss = click;
-				//vec2 points[size];
-				
-				//points = new vec2[ss]; 
-				//cout << "T3 size: " << sizeof(points) << endl;
-				//genPoints(points, N); 
-				
-				
-				//genPoints(points,vec2(0.2,0.2),vec2(0.4,0.4));
-			
-				
-		}
+
+
 		glBindVertexArray(VAO[0]);
-		l->drawShape(N);
+
+		if ((click + 1) % 2 == 0)draw = true;
+
+		if (draw == true  && click>1)
+		{	
+			Circle ll(N[click-2],N[click-1]);
+			
+			l.push_front(ll); draw = false;
+						
+		}
 		
+		for (it = l.begin(); it != l.end(); ++it)
+		{
+			(*it).gen(); cout << "No of Lines" << l.size() << endl;
+		}
 		
 		
 		glBindVertexArray(VAO[1]);
@@ -118,49 +108,7 @@ int main()
 }
 
 
-/*void genPoints(vec2 *a, vec2 C[])
-{	
-	float rad = sqrt(pow(C[1].x - C[0].x, 2) + pow(C[1].y - C[0].y, 2));
-	float angle = 0; int i = 0;
 
-	switch (m)
-	{
-	case 1:
-		*(a+0) = C[0]; *(a+1) = C[1]; 
-		for (int i = 0; i < 2; ++i)
-			cout << C[i].x << " , " << C[i].y << " ";
-		break;
-	case 2:
-		
-		 //cout<<(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2));
-		i = 0;
-		while (i < s)
-		{
-			angle = 2 * 3.1415926f * float(i) / float(s);
-			vec2 temp;
-			temp.x = C[0].x+cos(angle)*rad;
-			temp.y = C[0].y+sin(angle)*rad;
-			*(a+i) = temp; 
-			++i;
-		}
-		break;
-	case 3:
-		//a = 0;
-		*a = C[0]; *(a + 1) = vec2(C[0].x, C[1].y); *(a + 2) = C[1]; *(a + 3) = vec2(C[1].x, C[0].y);
-		//*a = vec2(0.1, 0.1); *(a + 1) = vec2(0.1, 0.4); *(a + 2) = vec2(0.4, 0.4); *(a + 3) = vec2(0.4,0.1);
-		break;
-	case 4:
-		for (int i = 0; i <= click; ++i)
-		{
-			*(a + i) = C[i];
-		}
-		break;
-	default:
-		cout << "Select any Mode!! (1,2,3,4,5)";
-	}
-
-	
-}*/
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -173,6 +121,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 		N[click] = screenToWorld(window, mp);
 		++click;
+
+
+
 		/*
 		if (m != 4) {
 			if (click < 2)
@@ -210,7 +161,7 @@ void key_button_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_C && action == GLFW_RELEASE)
 	{
 		//points = NULL; 
-		draw = true; m = NULL;
+	     m = NULL;
 	}
 
 	if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
@@ -256,3 +207,48 @@ vec2 screenToWorld(GLFWwindow* w,vec2 scr)
 	//NorY1 = -(ypos - (height / 2)) / (height / 2);
 	return pos;
 }
+
+
+/*void genPoints(vec2 *a, vec2 C[])
+{
+	float rad = sqrt(pow(C[1].x - C[0].x, 2) + pow(C[1].y - C[0].y, 2));
+	float angle = 0; int i = 0;
+
+	switch (m)
+	{
+	case 1:
+		*(a+0) = C[0]; *(a+1) = C[1];
+		for (int i = 0; i < 2; ++i)
+			cout << C[i].x << " , " << C[i].y << " ";
+		break;
+	case 2:
+
+		 //cout<<(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2));
+		i = 0;
+		while (i < s)
+		{
+			angle = 2 * 3.1415926f * float(i) / float(s);
+			vec2 temp;
+			temp.x = C[0].x+cos(angle)*rad;
+			temp.y = C[0].y+sin(angle)*rad;
+			*(a+i) = temp;
+			++i;
+		}
+		break;
+	case 3:
+		//a = 0;
+		*a = C[0]; *(a + 1) = vec2(C[0].x, C[1].y); *(a + 2) = C[1]; *(a + 3) = vec2(C[1].x, C[0].y);
+		//*a = vec2(0.1, 0.1); *(a + 1) = vec2(0.1, 0.4); *(a + 2) = vec2(0.4, 0.4); *(a + 3) = vec2(0.4,0.1);
+		break;
+	case 4:
+		for (int i = 0; i <= click; ++i)
+		{
+			*(a + i) = C[i];
+		}
+		break;
+	default:
+		cout << "Select any Mode!! (1,2,3,4,5)";
+	}
+
+
+}*/

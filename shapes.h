@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
-
+#include <list>
 #include <iostream>
 using namespace std;
 #include "shader.h"
@@ -20,39 +20,56 @@ class Shape
 	public:
 		int size;
 		vec2 *p ;
-		virtual void drawShape(vec2 C[])=0;
-		
+		virtual void gen()=0;
+				
 };
 
 class Line : public Shape
 {
 	public:
-		
-		void drawShape(vec2 C[])
+	   
+		vec2 C[2];
+
+		Line() {}
+
+		 Line(vec2 f, vec2 s)
 		{	
+			C[0] = f;
+			C[1] = s;
+		}
+		void gen()
+		{
 			size = 2;
 			p = new vec2[size];
-			p[0] = C[0]; 
-			p[1] = C[1]; 
-
+			p[0] = C[0];
+			p[1] = C[1];
 			glBufferData(GL_ARRAY_BUFFER, sizeof(p)*(size) * 2, p, GL_STATIC_DRAW);// draw = false;
 			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); glEnableVertexAttribArray(0);
 			glDrawArrays(GL_LINE_LOOP, 0, size);
+			
 		}
-
+		
 };
 
-class Circle : public Shape
+class Circle :public Shape
 {
 public:
-	
-	
-	void drawShape(vec2 C[])
-	{		
+	vec2 C[2];
+
+	Circle() {}
+
+	Circle(vec2 f, vec2 s)
+	{
+		C[0] = f;
+		C[1] = s;
+	}
+	void gen()
+	{	
+		
 		int size = 20;
 		float rad = sqrt(pow(C[1].x - C[0].x, 2) + pow(C[1].y - C[0].y, 2));
 		float angle = 0; int i = 0;
-		p = new vec2[20];
+		p = new vec2[size];
 		i = 0;
 		while (i < 20)
 		{
@@ -60,41 +77,44 @@ public:
 			vec2 temp;
 			temp.x = C[0].x + cos(angle)*rad;
 			temp.y = C[0].y + sin(angle)*rad;
-			*(p + i) = temp;
+			*(this->p + i) = temp;
 			++i;
 		}
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(p)*(size) * 2, p, GL_STATIC_DRAW);// draw = false;
+		glBufferData(GL_ARRAY_BUFFER, sizeof(p)*(size) * 2, this->p, GL_STATIC_DRAW);// draw = false;
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); glEnableVertexAttribArray(0);
 		glDrawArrays(GL_LINE_LOOP, 0, size);
+				
 	}
-
+	
+	
 };
 
 
-class Rect : public Shape
+class Rect : Shape
 {
 public:
 	
-
-	void drawShape(vec2 C[])
-	{	
+	void gen(vec2 f, vec2 s)
+	{
 		int size = 4;
 		p = new vec2[size];
-		*p = C[0]; *(p + 1) = vec2(C[0].x, C[1].y); *(p + 2) = C[1]; *(p + 3) = vec2(C[1].x, C[0].y);
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(p)*(size) * 2, p, GL_STATIC_DRAW);// draw = false;
+		*p = f; *(p + 1) = vec2(f.x, s.y); *(p + 2) = s; *(p + 3) = vec2(s.x, f.y);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(p)*(size) * 2, this->p, GL_STATIC_DRAW);// draw = false;
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); glEnableVertexAttribArray(0);
 		glDrawArrays(GL_LINE_LOOP, 0, size);
+		
 	}
+
+
 
 };
  
-class Poly : public Shape
+class Poly 
 {
 public:
-	
-	void drawShape(vec2 C[])
+	int size;
+	vec2 *p;
+	void drawPoly(vec2 C[])
 	{
 		size = click;
 		p = new vec2[size];
