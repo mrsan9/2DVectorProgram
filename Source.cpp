@@ -1,6 +1,5 @@
 #include"initProg.h"
-#include<cstdlib>
-#include<algorithm>
+
 
 
 //void  genPoints(vec2 *a, vec2 C[]);
@@ -9,16 +8,31 @@
 int m = 0;  //Modes switching
 
 
-
-
 vec2 *N;  //Stores Click Positions
 
 list<Circle> c;
 list<Line> l;
 list<Rect> r;
-list<Poly> p; Poly pp; bool ren; bool d;
+list<Poly> p; 
+
+Poly pp; bool ren; bool d;
+
+vec2 currPos;
+
+/////Temp vars to edit pos
+Line *tl; int lind;
+Circle *tc;
+Rect *tr;
+Poly *tp;
+/////
 int main()
 {		
+
+	cout << "Menu"<<endl;
+	cout << "1.Line Mode \n2.Circle Mode\n3.Rectangle Mode\n4.Polygon Mode\n5.Edit Mode" << endl;
+	edit = false;
+	follow = follow2 = follow3 = follow4 = false;
+	segments = 10;
 	N = new vec2[50];
 	ren = true; d = false;
 	click = 0;
@@ -56,16 +70,23 @@ int main()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-	list <Circle> ::iterator it; 
+	list <Circle>::iterator it; 
 	list <Line> ::iterator it1;
 	list <Rect> ::iterator it2; 
 	list <Poly> ::iterator it3;
-	//Poly pp; 
+	
 
 	glUseProgram(ShaderProg);
 	vec2 pts[2]; 
+	vec2 mp;
+	vec2 fi;
+	vec2 ls;
 	while (!glfwWindowShouldClose(window))
 	{
+		double xpos = 0, ypos = 0;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		mp = vec2(xpos, ypos);
+		currPos = screenToWorld(window, mp);
 		
 		glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 		glLineWidth(3); glPointSize(20.0f);
@@ -101,8 +122,7 @@ int main()
 
 		if (m == 4)
 		{
-			vec2 fi;
-			vec2 ls;
+			
 			if (ren) {
 				pp.gen(N); pp.draw();
 
@@ -124,28 +144,125 @@ int main()
 			}
 			//p.get();
 		}
+		
 		if(!l.empty())
 		for (it1 = l.begin(); it1 != l.end(); ++it1)
 		{
 			(*it1).gen(); //cout << "No of Lines" << l.size() << endl;
+			
+			if(edit && m==5)
+				for (int i = 0; i < 2; ++i)
+				{	
+					fi = (*it1).C[i];
+					ls = currPos;
+					if (sqrt(pow(ls.x - fi.x, 2) + pow(ls.y - fi.y, 2)) <= 0.05)
+					{		
+						
+						tl = &(*it1); lind = i;
+						//(*it1).C[i] = currPos;
+						edit = false; follow = true;
+												
+					}
+					
+					
+				}
+
+			if (follow)
+			{
+				(*tl).C[lind] = currPos;
+			}
 		}
 		if (!c.empty())
 		for (it = c.begin(); it != c.end(); ++it)
-		{
+		{	
+			(*it).size = segments;
 			(*it).gen(); //cout << "No of Circles" << c.size() << endl;
+
+			if (edit && m == 5)
+			{ 
+					fi = (*it).C[1];
+					ls = currPos;
+					if (sqrt(pow(ls.x - fi.x, 2) + pow(ls.y - fi.y, 2)) <= 0.3)
+					{
+						glBufferData(GL_ARRAY_BUFFER, sizeof((*it).C), (*it).C, GL_STATIC_DRAW);
+						glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+						glDrawArrays(GL_POINTS, 0, 2);
+					}
+					if (sqrt(pow(ls.x - fi.x, 2) + pow(ls.y - fi.y, 2)) <= 0.2)
+					{
+
+						tc = &(*it); 
+						//(*it1).C[i] = currPos;
+						edit = false; follow2 = true;
+
+					}
+				
+
+			}	
+
+			if (follow2)
+			{
+				(*tc).C[1] = currPos;
+			}
 		}
 		if (!r.empty())
 		for (it2 = r.begin(); it2 != r.end(); ++it2)
 		{
 			(*it2).gen(); //cout << "No of Rects" << c.size() << endl;
+
+			if (edit && m == 5)
+				for (int i = 0; i < 2; ++i)
+				{
+					fi = (*it2).C[i];
+					ls = currPos;
+					if (sqrt(pow(ls.x - fi.x, 2) + pow(ls.y - fi.y, 2)) <= 0.03)
+					{
+
+						tr = &(*it2); lind = i;
+						//(*it1).C[i] = currPos;
+						edit = false; follow3 = true;
+
+					}
+					
+
+				}
+
+			if (follow3)
+			{
+				(*tr).C[lind] = currPos;
+			}
 		}
 		if (!p.empty())
 			for (it3 = p.begin(); it3 != p.end(); ++it3)
 			{	
-				//(*it3).id = 1;
+				
 				(*it3).draw(); //cout << "No of Polys" << p.size() << endl;
-				//cout<<(*it3).id;
+						
+				if (edit && m == 5)
+					for (int i = 0; i < (*it3).size; ++i)
+					{
+						fi = (*it3).pts[i];
+						ls = currPos;
+						if (sqrt(pow(ls.x - fi.x, 2) + pow(ls.y - fi.y, 2)) <= 0.03)
+						{
+
+							tp = &(*it3); lind = i;
+							//(*it1).C[i] = currPos;
+							edit = false; follow4 = true;
+
+						}
+						
+
+					}
+
+				if (follow4)
+				{
+					(*tp).pts[lind] = currPos;
+				}
 			}
+
+		
+
 
 
 		if (draw ) {
@@ -153,17 +270,19 @@ int main()
 			pts[1] = (*(N + (click - 1)));
 			glBindVertexArray(VAO[1]);
 
-			if (m != 4)
+			if (m != 4&&click>1 && m!=5)
 			{
 				glBufferData(GL_ARRAY_BUFFER, sizeof(pts), pts, GL_STATIC_DRAW);
 				glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 				glDrawArrays(GL_POINTS, 0, 2);
 
 			}
-			else {
-				glBufferData(GL_ARRAY_BUFFER, sizeof(N)*100, N, GL_STATIC_DRAW);
-				glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-				glDrawArrays(GL_POINTS, 0, click);
+			else {	
+				if (m != 5) {
+					glBufferData(GL_ARRAY_BUFFER, sizeof(N) * 100, N, GL_STATIC_DRAW);
+					glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+					glDrawArrays(GL_POINTS, 0, click);
+				}
 			}
 		}
 
@@ -181,18 +300,25 @@ int main()
 }
 
 
+void drawShapes()
+{
+	
+}
+
 
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{	
-		cout << "ClickNo: " << click << endl;
+		//cout << "Released" << endl;
+		//cout << "ClickNo: " << click << endl;
+		
 		double xpos = 0, ypos = 0;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		vec2 mp = vec2(xpos,ypos);
 
-
+		edit = true;
 		//if (pd > 1)pd = 0;
 		/*if (m != 4) {
 			if (click < 2)
@@ -218,13 +344,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		//	cout << "Last pt: " << (*(N+(click-1))).x << "," << (*(N + (click - 1))).y<<endl;
 	}
 	
-	/*if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{	
-		cout << "N points:";
-		for (int i = 0; i <= 2; ++i)
-			cout << N[i].x << " , " << N[i].y << " ";
-		cout <<endl ;
-	}*/
+		follow = follow2 = follow3 = follow4 = false; edit = false;
+	}
 }
 void key_button_callback(GLFWwindow* window, int key, int scancode, int action, int mod)
 {
@@ -239,19 +362,31 @@ void key_button_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
 	{
-		m = 1; cout << "Line Mode" << endl; click = 0;
+		m = 1; cout << "\nLine Mode Selected" << endl; click = 0;
 	}
 	if (key == GLFW_KEY_2 && action == GLFW_RELEASE)
 	{
-		m = 2; cout << "Circle Mode" << endl; click = 0;
+		m = 2; cout << "\nCircle Mode Selected" << endl; click = 0;
 	}
 	if (key == GLFW_KEY_3 && action == GLFW_RELEASE)
 	{
-		m = 3; cout << "Rectangle Mode" << endl; click = 0;
+		m = 3; cout << "\nRectangle Mode Selected" << endl; click = 0;
 	}
 	if (key == GLFW_KEY_4 && action == GLFW_RELEASE)
 	{
-		m = 4; cout << "Polygon Mode" << endl; click = 0;
+		m = 4; cout << "\nPolygon Mode Selected" << endl; click = 0;
+	}
+	if (key == GLFW_KEY_5 && action == GLFW_RELEASE)
+	{
+		m = 5; cout << "\nEdit Mode Selected" << endl; edit = false;
+	}
+	if (key == GLFW_KEY_W && action == GLFW_PRESS)
+	{
+		segments += 1;
+	}
+	if (key == GLFW_KEY_S && action == GLFW_PRESS)
+	{
+		segments -= 1;
 	}
 	draw = true;
 	//cout << "Mode: " << m << endl << "Draw:" << draw;

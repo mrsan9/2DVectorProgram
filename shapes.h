@@ -8,6 +8,8 @@
 #include <iostream>
 using namespace std;
 #include "shader.h"
+#include<cstdlib>
+#include<algorithm>
 
 
 typedef glm::vec2 vec2;
@@ -15,6 +17,9 @@ typedef glm::vec3 vec3;
 
 static int click;
 static bool draw;
+static int segments;
+static bool edit,follow,follow2,follow3,follow4;
+
 class Shape
 {
 	public:
@@ -59,8 +64,10 @@ class Circle :public Shape
 {
 public:
 	vec2 C[2];
-
-	Circle() {}
+	int size = 10;
+	Circle() {
+		
+	}
 
 	Circle(vec2 f, vec2 s)
 	{
@@ -70,14 +77,14 @@ public:
 	void gen()
 	{	
 		
-		int size = 20;
+		
 		float rad = sqrt(pow(C[1].x - C[0].x, 2) + pow(C[1].y - C[0].y, 2));
 		float angle = 0; int i = 0;
 		p = new vec2[size];
 		i = 0;
-		while (i < 20)
+		while (i < size)
 		{
-			angle = 2 * 3.1415926f * float(i) / float(20);
+			angle = 2 * 3.1415926f * float(i) / float(size);
 			vec2 temp;
 			temp.x = C[0].x + cos(angle)*rad;
 			temp.y = C[0].y + sin(angle)*rad;
