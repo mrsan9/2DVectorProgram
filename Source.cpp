@@ -28,8 +28,8 @@ Poly *tp;
 int main()
 {
 
-	cout << "Menu" << endl;
-	cout << "1.Line Mode \n2.Circle Mode\n3.Rectangle Mode\n4.Polygon Mode\n5.Edit Mode" << endl;
+	cout << "\n\n\tMenu\n" << endl;
+	cout << "\t1.Line Mode \n\t2.Circle Mode\n\t3.Rectangle Mode\n\t4.Polygon Mode\n\t5.Edit Mode\n\t\n\t\'C\' - Clear Screen\n\t'W\' - Increase Circle Segments \n\t'S\' - Decrease Circle Segments" << endl;
 	edit = false;
 	follow = follow2 = follow3 = follow4 = false;
 	segments = 10;
