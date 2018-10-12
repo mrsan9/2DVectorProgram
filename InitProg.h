@@ -16,8 +16,8 @@ class Init
 {		
 
 public :
-	const unsigned int SCR_WIDTH = 600;
-	const unsigned int SCR_HEIGHT = 600;
+	const unsigned int SCR_WIDTH = 800;
+	const unsigned int SCR_HEIGHT = 800;
 
 	GLFWwindow* window;
 	GLuint ShaderProg;
@@ -31,7 +31,7 @@ public :
 		
 		// glfw window creation
 		// --------------------
-		window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+		window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "2DPaint", NULL, NULL);
 
 
 
