@@ -1,5 +1,4 @@
-﻿  glad.c
-  Source.cpp
+﻿  Source.cpp
 glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(context.obj)' or at 'E:\My Projects\OpenGL\2DVectorProgram\Debug\glfw.pdb'; linking object as if no debug info
 glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(init.obj)' or at 'E:\My Projects\OpenGL\2DVectorProgram\Debug\glfw.pdb'; linking object as if no debug info
 glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(input.obj)' or at 'E:\My Projects\OpenGL\2DVectorProgram\Debug\glfw.pdb'; linking object as if no debug info
