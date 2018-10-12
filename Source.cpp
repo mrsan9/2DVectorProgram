@@ -300,11 +300,6 @@ int main()
 }
 
 
-void drawShapes()
-{
-	
-}
-
 
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -356,8 +351,12 @@ void key_button_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_C && action == GLFW_RELEASE)
 	{
-		//points = NULL; 
-	     m = NULL;
+		m = NULL;
+		N = new vec2[50];
+		c.clear();
+		l.clear();
+		r.clear();
+		p.clear();
 	}
 
 	if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
