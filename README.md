@@ -1,7 +1,7 @@
 # 2DVectorGraphics
 How to use:
 
-*Open the executable file (2DVectorProgram.exe) from the project folder.
+*Open the executable file (2DVectorProgram.exe) from the "Executable file" folder.
 
 **Select any one of the below options
 
